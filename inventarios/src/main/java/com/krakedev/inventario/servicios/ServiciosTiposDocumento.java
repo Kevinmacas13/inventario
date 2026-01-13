@@ -33,4 +33,7 @@ public class ServiciosTiposDocumento {
 		 return Response.serverError().build();
 	}
    }
+	
+	
+
 }

@@ -16,6 +16,46 @@ import com.krakedev.inventario.utils.ConexionBDD;
 
 public class ProductosBDD {
 	
+	
+	public  void insertar(Producto producto) throws KrakedevException {
+		Connection con=null;
+	    PreparedStatement ps = null;
+
+		try {
+		    con = ConexionBDD.obtenerConexion();
+	        ps = con.prepareStatement(
+	            "INSERT INTO producto(codigo_pro, nombre, udm, precio_venta, tiene_iva, coste, categoria_serial, stock) VALUES (?,?,?,?,?,?,?,?)"
+	        );
+
+	        ps.setString(1, producto.getCodigoPro());
+	        ps.setString(2, producto.getNombre());
+	        ps.setString(3, producto.getUnidadDeMedida().getNombre()); 
+	        ps.setBigDecimal(4, producto.getPrecioVenta());
+	        ps.setBoolean(5, producto.isTieneIva());
+	        ps.setBigDecimal(6, producto.getCosto());
+	        ps.setInt(7, producto.getCategoria().getCodigoCat());
+	        ps.setInt(8, producto.getStock());
+	        ps.executeUpdate();
+
+
+		}catch (SQLException e) {
+			e.printStackTrace();
+		 throw new KrakedevException("Error al insertar el cliente"+e.getMessage());
+		} 
+		catch (KrakedevException e) {
+			throw e;
+		} 
+		finally {
+			if(con!=null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	  }	
+	
 public ArrayList<Producto> buscar(String subcadena) throws KrakedevException {
 		
 		Connection con=null;

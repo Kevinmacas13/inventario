@@ -82,4 +82,63 @@ public class PedidoBDD {
 			}
 		}
 	  }	
+	
+	
+	
+	
+	public  void recibir(Pedido pedido) throws KrakedevException {
+		Connection con=null;
+	    PreparedStatement ps = null;
+	    PreparedStatement psDet = null;
+	    ResultSet rsClave= null;
+	    DetallePedido det;
+	    int codigoCabecera=0;
+
+		try {
+			   con = ConexionBDD.obtenerConexion();
+			   
+			   ps=con.prepareStatement(
+					   "UPDATE cabecera_pedido SET  estado=? WHERE  numero_serial=?"
+					   );
+				ps.setString(1, "R");
+				ps.setInt(2, pedido.getNumero());
+			     ps.executeUpdate();
+			    
+			     ArrayList<DetallePedido> detallesPedido = pedido.getDetallesPedido();
+			     
+			     for(int i=0;i<detallesPedido.size();i++) {
+			    	 det= detallesPedido.get(i);
+			    	 psDet = con.prepareStatement(
+			    			    "UPDATE detalle_pedido " +
+			    			    "SET cantidad_recibida = ?, subtotal = ? " +
+			    			    "WHERE codigo_serial = ?"
+			    			);
+			    	 psDet.setInt(1,det.getCantidadRecibida());
+			    	 BigDecimal pv= det.getProducto().getPrecioVenta();
+			    	 BigDecimal cantidaSoli = new BigDecimal(det.getCantidadSolicitada()- det.getCantidadRecibida());
+			    	 BigDecimal subtotal=pv.multiply(cantidaSoli);
+			    	 
+			    	 psDet.setBigDecimal(2, subtotal);
+			    	 psDet.setInt(3,det.getCodigoPedido());
+			   
+			    	 psDet.executeUpdate();
+			     }
+
+		}catch (SQLException e) {
+			e.printStackTrace();
+		 throw new KrakedevException("Error al insertar el cliente"+e.getMessage());
+		} 
+		catch (KrakedevException e) {
+			throw e;
+		} 
+		finally {
+			if(con!=null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	  }	
 }

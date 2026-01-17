@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Producto {
 	
-	  private String codigoPro;
+	  private int codigo;
 	  private String nombre;
 	  private UnidadDeMedida unidadDeMedida;
 	  private BigDecimal precioVenta;
@@ -17,11 +17,12 @@ public class Producto {
 	  public Producto() {
 		  
 	  }
-	  
-	public Producto(String codigoPro, String nombre, UnidadDeMedida unidadDeMedida, BigDecimal precioVenta,
-			boolean tieneIva, BigDecimal costo, Categoria categoria, int stock) {
+
+
+	public Producto(int codigo, String nombre, UnidadDeMedida unidadDeMedida, BigDecimal precioVenta, boolean tieneIva,
+			BigDecimal costo, Categoria categoria, int stock) {
 		super();
-		this.codigoPro = codigoPro;
+		this.codigo = codigo;
 		this.nombre = nombre;
 		this.unidadDeMedida = unidadDeMedida;
 		this.precioVenta = precioVenta;
@@ -32,86 +33,97 @@ public class Producto {
 	}
 
 
-
-	public String getCodigoPro() {
-		return codigoPro;
+	public int getCodigo() {
+		return codigo;
 	}
 
-	public void setCodigoPro(String codigoPro) {
-		this.codigoPro = codigoPro;
+
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
 	}
+
 
 	public String getNombre() {
 		return nombre;
 	}
 
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
 
 	public UnidadDeMedida getUnidadDeMedida() {
 		return unidadDeMedida;
 	}
 
+
 	public void setUnidadDeMedida(UnidadDeMedida unidadDeMedida) {
 		this.unidadDeMedida = unidadDeMedida;
 	}
+
 
 	public BigDecimal getPrecioVenta() {
 		return precioVenta;
 	}
 
+
 	public void setPrecioVenta(BigDecimal precioVenta) {
 		this.precioVenta = precioVenta;
 	}
+
 
 	public boolean isTieneIva() {
 		return tieneIva;
 	}
 
+
 	public void setTieneIva(boolean tieneIva) {
 		this.tieneIva = tieneIva;
 	}
+
 
 	public BigDecimal getCosto() {
 		return costo;
 	}
 
+
 	public void setCosto(BigDecimal costo) {
 		this.costo = costo;
 	}
+
 
 	public Categoria getCategoria() {
 		return categoria;
 	}
 
+
 	public void setCategoria(Categoria categoria) {
 		this.categoria = categoria;
 	}
+
 
 	public int getStock() {
 		return stock;
 	}
 
+
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
 
+
 	@Override
 	public String toString() {
-	    return "Producto [" +
-	            "codigoPro='" + codigoPro + '\'' +
-	            ", nombre='" + nombre + '\'' +
-	            ", unidadDeMedida=" + unidadDeMedida +
-	            ", precio_venta=" + precioVenta +
-	            ", tiene_iva=" + tieneIva +
-	            ", costo=" + costo +
-	            ", categoria=" + categoria +
-	            ", stock=" + stock +
-	            ']';
+		return "Producto [codigo=" + codigo + ", nombre=" + nombre + ", unidadDeMedida=" + unidadDeMedida
+				+ ", precioVenta=" + precioVenta + ", tieneIva=" + tieneIva + ", costo=" + costo + ", categoria="
+				+ categoria + ", stock=" + stock + ", toString()=" + super.toString() + "]";
 	}
+
+
+	
 	  
-	  
+	
 	  
 	  
 }

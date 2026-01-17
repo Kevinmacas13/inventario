@@ -30,7 +30,7 @@ create table unidad_medida (
 -- tabla: producto
 drop table if exists producto;
 create table producto (
-    codigo_pro char(1) not null ,
+    codigo serial not null ,
     nombre varchar(100) not null,
     udm char(2) not null,
     precio_venta money not null,
@@ -41,8 +41,14 @@ create table producto (
     constraint producto_pk primary key (codigo_pro),
     constraint  umd_fk foreign key (udm) references unidad_medida(codigo_udm),
     constraint categoria_fk foreign key (categoria_serial) references categorias(codigo_cat)
-
 );
+
+alter table producto
+drop COLUMN codigo_pro;
+alter table producto ADD COLUMN codigo serial;
+alter table producto add constraint producto_pk primary key (codigo);
+
+
 
 -- tabla: tipo_documento
 drop table if exists tipo_documento;
@@ -80,7 +86,7 @@ drop table if exists detalle_pedido;
 create table detalle_pedido (
     codigo_serial serial not null,
     cabecera_pedido int not null,
-    producto char(1),
+    producto int,
     cantidad money not null,
     subtotal money not null,
     constraint detalle_pedido_pk primary key (codigo_serial),
@@ -88,6 +94,12 @@ create table detalle_pedido (
     constraint producto_fk foreign key (producto) references producto(codigo_pro)
 );
 
+alter table detalle_pedido drop COLUMN
+ producto;
+ alter table detalle_pedido drop constraint producto_fk; 
+
+ alter table detalle_pedido add COLUMN producto int;
+ alter table detalle_pedido  add constraint   producto_fk foreign key (producto) references producto(codigo);
 
 -- tabla: estado_pedidos
 drop table if exists estado_pedidos;
@@ -111,6 +123,14 @@ create table historial_stock (
     constraint producto_fk foreign key (producto) references producto(codigo_pro)
 );
 
+alter table historial_stock drop COLUMN
+ producto;
+ alter table historial_stock drop constraint producto_fk;
+
+
+  alter table historial_stock add COLUMN producto int;
+ alter table historial_stock add constraint   producto_fk foreign key (producto) references producto(codigo);
+
 -- tabla: cabecera_venta
 drop table if exists cabecera_venta;
 create table cabecera_venta (
@@ -126,7 +146,7 @@ create table cabecera_venta (
 drop table if exists detalle_ventas;
 create table detalle_ventas (
     codigo char(1) not null,
-    producto char(1) not null,
+    producto int not null,
     cantidad int not null,
     precio_venta money not null,
     subtotal money not null,
@@ -136,7 +156,12 @@ create table detalle_ventas (
     constraint producto_fk foreign key (producto) references producto(codigo_pro),
     constraint cabecera_venta_fk foreign key (cabecera_venta) references cabecera_venta(codigo)
 );
+alter table detalle_ventas drop COLUMN
+ producto;
+  alter table detalle_ventas drop constraint producto_fk;
 
+   alter table detalle_ventas add COLUMN producto int;
+ alter table detalle_ventas  add constraint   producto_fk foreign key (producto) references producto(codigo);
 
 --LOS INSERTS
 
@@ -166,11 +191,11 @@ INSERT INTO unidad_medida (codigo_udm, descripcion, categoria_udm) VALUES
 
 select * from unidad_medida;
 
-INSERT INTO producto (codigo_pro, nombre, udm, precio_venta, tiene_iva, coste, categoria_serial, stock) VALUES
-('1', 'coca cola pequeña', 'ml', 0.5804, true, 0.3729, 7, 105),
-('2', 'salsa de tomate', 'kg', 0.95, true, 0.8736, 3, 0),
-('3', 'mostaza', 'kg', 0.95, true, 0.89, 3, 0),
-('4', 'fuze tea', 'u', 0.8, true, 0.7, 7, 49);
+INSERT INTO producto (nombre, udm, precio_venta, tiene_iva, coste, categoria_serial, stock) VALUES
+( 'coca cola pequeña', 'ml', 0.5804, true, 0.3729, 7, 105),
+( 'salsa de tomate', 'kg', 0.95, true, 0.8736, 3, 0),
+( 'mostaza', 'kg', 0.95, true, 0.89, 3, 0),
+( 'fuze tea', 'u', 0.8, true, 0.7, 7, 49);
 
 select * from producto;
 INSERT INTO tipo_documento (codigo_td, descripcion) VALUES

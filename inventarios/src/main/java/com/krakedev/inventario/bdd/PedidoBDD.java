@@ -54,7 +54,7 @@ public class PedidoBDD {
 			    			 " values (?, ? ,?, ?, ?)");
 			    	 
 			    	 psDet.setInt(1,codigoCabecera);
-			    	 psDet.setString(2, det.getProducto().getCodigoPro());
+			    	 psDet.setInt(2, det.getProducto().getCodigo());
 			    	 psDet.setInt(3, det.getCantidadSolicitada());
 			    	 psDet.setInt(4,0);
 			   
@@ -130,7 +130,7 @@ public class PedidoBDD {
 						   );
 					psHis.setTimestamp(1,fechaHoraActual);
 					psHis.setString(2,"PEDIDO "+pedido.getNumero());
-					psHis.setString(3, det.getProducto().getCodigoPro());
+					psHis.setInt(3, det.getProducto().getCodigo());
 					psHis.setInt(4,det.getCantidadRecibida());
 				     psHis.executeUpdate(); 
 			     }

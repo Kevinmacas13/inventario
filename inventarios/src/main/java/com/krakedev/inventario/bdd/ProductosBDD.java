@@ -24,10 +24,10 @@ public class ProductosBDD {
 		try {
 		    con = ConexionBDD.obtenerConexion();
 	        ps = con.prepareStatement(
-	            "INSERT INTO producto(codigo_pro, nombre, udm, precio_venta, tiene_iva, coste, categoria_serial, stock) VALUES (?,?,?,?,?,?,?,?)"
+	            "INSERT INTO producto(codigo, nombre, udm, precio_venta, tiene_iva, coste, categoria_serial, stock) VALUES (?,?,?,?,?,?,?,?)"
 	        );
 
-	        ps.setString(1, producto.getCodigoPro());
+	        ps.setInt(1, producto.getCodigo());
 	        ps.setString(2, producto.getNombre());
 	        ps.setString(3, producto.getUnidadDeMedida().getNombre()); 
 	        ps.setBigDecimal(4, producto.getPrecioVenta());
@@ -68,7 +68,7 @@ public ArrayList<Producto> buscar(String subcadena) throws KrakedevException {
 			con = ConexionBDD.obtenerConexion();
 			ps = 
 					con.prepareStatement(
-						    "SELECT prod.codigo_pro, prod.nombre as nombre_producto, udm.codigo_udm as nombre_udm, udm.descripcion as descripcion_udm, "
+						    "SELECT prod.codigo, prod.nombre as nombre_producto, udm.codigo_udm as nombre_udm, udm.descripcion as descripcion_udm, "
 						  + "cast(prod.precio_venta as decimal(6,2)), prod.tiene_iva, cast(prod.coste as decimal(5,4)), prod.categoria_serial as categoria, cat.nombre as nombre_categoria, prod.stock "
 						  + "FROM producto prod, unidad_medida udm, categorias cat "
 						  + "WHERE prod.udm = udm.codigo_udm "
@@ -78,7 +78,7 @@ public ArrayList<Producto> buscar(String subcadena) throws KrakedevException {
 			 ps.setString(1, "%"+subcadena.toUpperCase()+"%");
 		     rs= ps.executeQuery();
 		     while(rs.next()) {
-		    	 String codigoPro=rs.getString("codigo_pro");
+		    	 int codigoPro=rs.getInt("codigo_pro");
 		    	 String nombreProducto=rs.getString("nombre_producto");
 		    	 String nombreUnidadMedida=rs.getString("nombre_udm");
 		    	 String descripcionUdm=rs.getString("descripcion_udm");

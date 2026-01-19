@@ -1,5 +1,6 @@
 package com.krakedev.entidades;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -11,6 +12,7 @@ public class Pedido {
 	private ArrayList<DetallePedido> detallesPedido;
 
 	public Pedido() {
+		   this.detallesPedido = new ArrayList<DetallePedido>();
 
 	}
 	

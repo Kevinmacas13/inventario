@@ -11,13 +11,114 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.krakedev.entidades.DetallePedido;
+import com.krakedev.entidades.EstadoPedido;
 import com.krakedev.entidades.Pedido;
+import com.krakedev.entidades.Producto;
+import com.krakedev.entidades.Proveedor;
 import com.krakedev.exceptions.KrakedevException;
 import com.krakedev.inventario.utils.ConexionBDD;
 
 public class PedidoBDD {
 
 	
+	
+public ArrayList<Pedido> buscar(String subcadena) throws KrakedevException {
+		Connection con=null;
+		ResultSet rs=null;
+		ResultSet rsDet=null;
+		PreparedStatement ps=null;
+		PreparedStatement psDet=null;
+	    ProductosBDD prodBDD = new ProductosBDD();
+	    ProveedoresBDD provBDD= new ProveedoresBDD();
+	   ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
+	 
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = 
+			con.prepareStatement(
+					"SELECT " +
+						    "ped.numero_serial AS codigo_pedido, " +
+						    "ped.fecha AS fecha_pedido, " +
+						    "ped.estado AS estado_pedido, " +
+						    "ped.proveedor, " +
+						    "estPed.nombre AS nombre_estado " +
+						    "FROM cabecera_pedido AS ped " +
+						    "JOIN estado_pedidos AS estPed ON ped.estado = estPed.codigo " +
+						    "WHERE UPPER(ped.proveedor) LIKE ?"
+
+					);
+			 ps.setString(1, subcadena.toUpperCase());
+		     rs= ps.executeQuery();
+		     while(rs.next()) {
+		    	 int   codigoPedido=rs.getInt("codigo_pedido");
+		    	 Date fecha= rs.getDate("fecha_pedido");
+		    	 String estado=rs.getString("estado_pedido");
+		    	 String proveedorCode=rs.getString("proveedor");
+		    	 Proveedor proveedor=  provBDD.buscarProveedorPorPk(proveedorCode);
+		    	 String estadoNombre= rs.getString("nombre_estado");
+		    	 Pedido pedido= new Pedido();
+		    	 pedido.setNumero(codigoPedido);
+		    	 pedido.setDate(fecha);
+		    	 pedido.setEstado(new EstadoPedido(estado,estadoNombre));
+		    	 pedido.setProveedor(proveedor);
+		  	   ArrayList<DetallePedido> detallePedidos = new ArrayList<DetallePedido>();
+		 
+					psDet = 
+							con.prepareStatement(
+									"SELECT " +
+										    "detPed.codigo_serial AS codigo_detalle, " +
+										    "detPed.cabecera_pedido AS pedido, " +
+										    "detPed.subtotal, " +
+										    "detPed.cantidad_recibida, " +
+										    "detPed.cantidad_solicitada, " +
+										    "detPed.producto " +
+										    "FROM cabecera_pedido AS ped " +
+										    "JOIN detalle_pedido AS detPed ON detPed.cabecera_pedido= ? " 
+									);
+							 psDet.setInt(1,codigoPedido);
+						     rsDet= psDet.executeQuery();
+	
+						     while(rsDet.next()) {
+						    	 
+						    	 int codigoDetalle= rsDet.getInt("codigo_detalle");
+						    	 BigDecimal subtotal= rsDet.getBigDecimal("subtotal");
+						    	 int cantidadSolicitada= rsDet.getInt("cantidad_solicitada");
+						    	 int cantidadRecibida= rsDet.getInt("cantidad_recibida");
+						    	 int prod= rsDet.getInt("producto");
+						    	 Producto producto = prodBDD.buscarProducoPorPk(prod);
+						    	 DetallePedido detallePedido = new DetallePedido();
+						    	 detallePedido.setCodigoPedido(codigoDetalle);
+						    	 detallePedido.setCantidadRecibida(cantidadRecibida);
+						    	 detallePedido.setCantidadSolicitada(cantidadSolicitada);
+						    	 detallePedido.setSubtotal(subtotal);
+						    	 detallePedido.setProducto(producto);
+						    	 detallePedidos.add(detallePedido);
+						    	 
+						     }
+						     pedido.setDetallesPedido(detallePedidos);
+					    	 pedidos.add(pedido);
+		     }
+		     
+		     
+		     
+		     
+		}catch (SQLException e) {
+			e.printStackTrace();
+		 throw new KrakedevException("Error al cargar los clientes"+e.getMessage());
+		} 
+		catch (KrakedevException e) {
+			throw e;
+		} 	finally {
+			if(con!=null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return pedidos;
+	}
 	
 	public  void insertar(Pedido pedido) throws KrakedevException {
 		Connection con=null;
@@ -152,5 +253,8 @@ public class PedidoBDD {
 				}
 			}
 		}
-	  }	
+	  }
+
+
+	
 }

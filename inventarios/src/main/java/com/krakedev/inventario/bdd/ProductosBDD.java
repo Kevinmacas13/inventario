@@ -37,6 +37,44 @@ public class ProductosBDD {
 	        ps.setInt(8, producto.getStock());
 	        ps.executeUpdate();
 
+		}catch (SQLException e) {
+			e.printStackTrace();
+		 throw new KrakedevException("Error al insertar el cliente"+e.getMessage());
+		} 
+		catch (KrakedevException e) {
+			throw e;
+		} 
+		finally {
+			if(con!=null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	  }	
+	
+	
+	public  void actualizar(Producto producto) throws KrakedevException {
+		Connection con=null;
+	    PreparedStatement ps = null;
+
+		try {
+	        con = ConexionBDD.obtenerConexion();
+	        ps = con.prepareStatement(
+	            "UPDATE producto SET nombre=?, udm=?, precio_venta=?, tiene_iva=?, coste=?, categoria_serial=? WHERE codigo=?"
+	        );
+
+	        ps.setString(1, producto.getNombre());
+	        ps.setString(2, producto.getUnidadDeMedida().getNombre());
+	        ps.setBigDecimal(3, producto.getPrecioVenta());
+	        ps.setBoolean(4, producto.isTieneIva());
+	        ps.setBigDecimal(5, producto.getCosto());
+	        ps.setInt(6, producto.getCategoria().getCodigoCat());
+	        ps.setInt(7, producto.getCodigo()); 
+	        ps.executeUpdate();
+
 
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -55,6 +93,70 @@ public class ProductosBDD {
 			}
 		}
 	  }	
+	
+public Producto buscarProducoPorPk(int subcadena) throws KrakedevException {
+		Connection con=null;
+		ResultSet rs=null;
+		Producto producto=null;
+		PreparedStatement ps=null;
+		
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = 
+					con.prepareStatement(
+						    "SELECT prod.codigo, prod.nombre as nombre_producto, udm.codigo_udm as nombre_udm, udm.descripcion as descripcion_udm, "
+						  + "cast(prod.precio_venta as decimal(6,2)), prod.tiene_iva, cast(prod.coste as decimal(5,4)), prod.categoria_serial as categoria, cat.nombre as nombre_categoria, prod.stock "
+						  + "FROM producto prod, unidad_medida udm, categorias cat "
+						  + "WHERE prod.udm = udm.codigo_udm "
+						  + "AND prod.categoria_serial = cat.codigo_cat "
+						  + "AND prod.codigo = ?"
+						);
+			 ps.setInt(1, subcadena);
+		     rs= ps.executeQuery();
+		     if(rs.next()) {
+		    	 int codigoPro=rs.getInt("codigo");
+		    	 String nombreProducto=rs.getString("nombre_producto");
+		    	 String nombreUnidadMedida=rs.getString("nombre_udm");
+		    	 String descripcionUdm=rs.getString("descripcion_udm");
+                 BigDecimal precioVenta=rs.getBigDecimal("precio_venta");
+                 boolean tieneIva=rs.getBoolean("tiene_iva");
+                 BigDecimal coste=rs.getBigDecimal("coste");
+                 int codigoCategoria=rs.getInt("categoria");
+                 String nombreCategoria=rs.getString("nombre_categoria");
+                 int stock=rs.getInt("stock");
+  
+		    
+		    	 UnidadDeMedida udm= new UnidadDeMedida();
+		    	 udm.setNombre(nombreUnidadMedida);
+		    	 udm.setDescripcion(descripcionUdm);
+		    	 Categoria categoria=new Categoria();
+		    	 categoria.setCodigoCat(codigoCategoria);
+		    	 categoria.setNombre(nombreCategoria);
+		    	 
+		    	 producto=new Producto( codigoPro, nombreProducto,  udm, precioVenta,
+		    				 tieneIva, coste, categoria,  stock );
+		    	
+		     }
+		     
+		}catch (SQLException e) {
+			e.printStackTrace();
+		 throw new KrakedevException("Error al cargar los clientes"+e.getMessage());
+		} 
+		catch (KrakedevException e) {
+			throw e;
+		} 	finally {
+			if(con!=null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return producto;
+	}
+
+	
 	
 public ArrayList<Producto> buscar(String subcadena) throws KrakedevException {
 		

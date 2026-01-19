@@ -53,5 +53,26 @@ public class ServiciosProveedores {
 		 return Response.serverError().build();
 	}
    }
+	
+	
+	@Path("buscarPk/{sub}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+   public Response obtenerProveedor(@PathParam("sub") String nombre) {
+    ProveedoresBDD provBDD=new ProveedoresBDD();
+    System.out.println("Ingresa >>>> " + nombre);
+    Proveedor proveedor= null;
+   
+    try {
+		proveedor= provBDD.buscarProveedorPorPk(nombre);
+	    return Response
+				.ok(proveedor)
+				.build();
+
+	} catch (KrakedevException e) {
+		e.printStackTrace();
+		 return Response.serverError().build();
+	}
+   }
 
 }

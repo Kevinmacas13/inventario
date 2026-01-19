@@ -30,7 +30,6 @@ public class VentaBDD {
 	    ResultSet rsClave= null;
 	    DetalleVenta det;
 	    int codigoCabecera=0;
-	    
 	    Timestamp fechaHoraActual = new Timestamp(fechaActual.getTime());
 
 		try {
@@ -49,29 +48,22 @@ public class VentaBDD {
 			     if(rsClave.next()) {
 			    	codigoCabecera= rsClave.getInt(1);
 			     }
-			    
 			     ArrayList<DetalleVenta> detallesVenta = venta.getDetalles();
-			     
-			     
 				 BigDecimal total_sin_iva= new BigDecimal(0);
 				 BigDecimal  iva=new BigDecimal(0);
 				 BigDecimal  total=new BigDecimal(0);
-			     
 			     for(int i=0;i<detallesVenta.size();i++) {
 			    	 det= detallesVenta.get(i);
 			    	 psDet= con.prepareStatement("insert into detalle_ventas"+
 			    	  " (cabecera_venta, producto,cantidad, precio_venta, subtotal, subtotal_iva)"+
 			    			 " values (?, ? ,?, ?, ?, ?)");
-			    	 
 			    	 psDet.setInt(1,codigoCabecera);
 			    	 psDet.setInt(2, det.getProducto().getCodigo());
 			    	 psDet.setInt(3, det.getCantidad());
 			    	 psDet.setBigDecimal(4,det.getProducto().getPrecioVenta());
-			    	 
 			    	 BigDecimal pv= det.getProducto().getPrecioVenta();
 			    	 BigDecimal cantidaSoli = new BigDecimal(det.getCantidad());
-			    	 BigDecimal subtotal=pv.multiply(cantidaSoli);
-			    	 
+			    	 BigDecimal subtotal=pv.multiply(cantidaSoli);	    	 
 			    	 psDet.setBigDecimal(5,subtotal);
 			    	 if(det.getProducto().isTieneIva()) {
 			    		 psDet.setBigDecimal(6, subtotal.multiply(new BigDecimal(1.12)));
@@ -81,12 +73,7 @@ public class VentaBDD {
 			    		 psDet.setBigDecimal(6, subtotal);
 			    		 total_sin_iva= total_sin_iva.add(det.getProducto().getPrecioVenta());
 			    	 }
-			    	 
-			    	 
 			    	 psDet.executeUpdate();
-			    	 
-			    	 
-			    	 
 				  	   psHis=con.prepareStatement(
 							   "INSERT INTO  historial_stock(fecha,referencia,producto,cantidad)VALUES (?,?,?,?)"
 							   );
@@ -95,13 +82,10 @@ public class VentaBDD {
 						psHis.setInt(3, det.getProducto().getCodigo());
 						psHis.setInt(4,det.getCantidad()*-1);
 					     psHis.executeUpdate(); 
-			    	 
 			     }
 
-			     
 			     total= iva.add(total_sin_iva);
-			     
-			     
+
 				   psUCV=con.prepareStatement(
 						   "UPDATE cabecera_venta SET total_sin_iva=? , iva =?, total= ? WHERE codigo=?",
 						   Statement.RETURN_GENERATED_KEYS
@@ -111,10 +95,7 @@ public class VentaBDD {
 					psUCV.setBigDecimal(3, total);
 					psUCV.setInt(4,codigoCabecera);
 				     psUCV.executeUpdate();
-				     
-				     
-				     
-				     
+
 		}catch (SQLException e) {
 			e.printStackTrace();
 		 throw new KrakedevException("Error al insertar el cliente"+e.getMessage());

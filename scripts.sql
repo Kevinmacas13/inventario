@@ -166,14 +166,13 @@ alter table detalle_ventas drop COLUMN
 --LOS INSERTS
 
 -- Insertar en categorias
-INSERT INTO categorias (codigo_cat, nombre, categoria_padre) VALUES
-(1, 'materia prima', NULL),
-(2, 'proteína', 1),
-(3, 'salsas', 1),
-(4, 'punto de venta', NULL),
-(5, 'bebidas', 4),
-(6, 'con alcohol', 5),
-(7, 'sin alcohol', 5);
+INSERT INTO categorias (nombre, categoria_padre) VALUES
+('proteína', 1),
+('salsas', 1),
+('punto de venta', NULL),
+('bebidas', 4),
+('con alcohol', 5),
+('sin alcohol', 5);
 select * from categorias;
 -- Insertar en categorias_unidad_medida
 INSERT INTO categorias_unidad_medida (codigo_cat_uni, nombre) VALUES

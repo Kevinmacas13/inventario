@@ -47,7 +47,54 @@ public class ProveedoresBDD {
 			}
 		}
 	  }	
+
 	
+public Proveedor buscarProveedorPorPk(String subcadena) throws KrakedevException {
+		
+		Connection con=null;
+		ResultSet rs=null;
+		Proveedor proveedor=null;
+		PreparedStatement ps=null;
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = 
+			con.prepareStatement("SELECT * FROM proveedor prov, tipo_documento td where"
+					+ " prov.tipo_documento=td.codigo_td"
+					+ " AND upper(identificador) like ?");
+			 ps.setString(1, subcadena.toUpperCase());
+		     rs= ps.executeQuery();
+		    if(rs.next()) {
+		    	 String identificador=rs.getString("identificador");
+		    	 String tipoDocumento=rs.getString("tipo_documento");
+		    	 String descripcionTd=rs.getString("descripcion");
+		    	 TiposDocumento tipoDoc=new TiposDocumento(tipoDocumento, descripcionTd);
+		    	 String nombre=rs.getString("nombre");
+		    	 String telefono=rs.getString("telefono");
+		    	 String correo=rs.getString("correo");
+		    	 String direccion=rs.getString("direccion");
+		    	proveedor=new Proveedor(identificador, tipoDoc, nombre,telefono, correo, direccion);
+		     }
+		     
+		}catch (SQLException e) {
+			e.printStackTrace();
+		 throw new KrakedevException("Error al cargar los clientes"+e.getMessage());
+		} 
+		catch (KrakedevException e) {
+			throw e;
+		} 	finally {
+			if(con!=null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return proveedor;
+	}
+
+
+
 public ArrayList<Proveedor> buscar(String subcadena) throws KrakedevException {
 		
 		Connection con=null;

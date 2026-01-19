@@ -1,10 +1,9 @@
 package com.krakedev.inventario.servicios;
 
-import java.util.ArrayList;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -32,19 +31,18 @@ public class ServiciosProductos {
 		}
 	   }
 	
-	@Path("buscar/{sub}")
+	@Path("buscarPk/{sub}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-   public Response obtenerCliente(@PathParam("sub") String nombre) {
+   public Response obtenerCliente(@PathParam("sub") int nombre) {
     ProductosBDD prodBDD=new ProductosBDD();
     System.out.println("Ingresa >>>> " + nombre);
-   
-    ArrayList<Producto> productos= new ArrayList<Producto>();
-   
+    Producto producto= null;
+
     try {
-		productos= prodBDD.buscar(nombre);
+		producto= prodBDD.buscarProducoPorPk(nombre);
 	    return Response
-				.ok(productos)
+				.ok(producto)
 				.build();
 
 	} catch (KrakedevException e) {
@@ -53,6 +51,26 @@ public class ServiciosProductos {
 		 return Response.serverError().build();
 	}
    }
+	
+	
+	   @Path("actualizar")
+	    @PUT
+	    @Consumes(MediaType.APPLICATION_JSON)
+	   public Response actualizar(Producto producto) {
+	    System.out.println("Actualizar Pedido>>>"+ producto);
+	    ProductosBDD prodBD=new ProductosBDD();
+	    try {
+			prodBD.actualizar(producto);
+			return Response.ok().build();
+		} catch (KrakedevException e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
+	   }
+	
+	
+	
+
 
 
 }
